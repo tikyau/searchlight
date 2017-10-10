@@ -1,5 +1,5 @@
 hash: d4e0fa4fe10ae0446a7bd192707a80af444bed38241dae17ed724523aa973c88
-updated: 2017-10-09T09:20:15.826749492-07:00
+updated: 2017-10-10T13:51:32.732376067-07:00
 imports:
 - name: github.com/appscode/envconfig
   version: 183bbe643a2875eaa69c85627ac6b25813983203
@@ -224,7 +224,7 @@ imports:
   - matchers/support/goraph/util
   - types
 - name: github.com/pkg/errors
-  version: 645ef00459ed84a119197bfb8d8205042c6df63d
+  version: a22138067af1c4942683050411a841ade67fe1eb
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
@@ -266,7 +266,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/spf13/cobra
-  version: 50204810fdb5010baae72e4f41b303689cbdcc9f
+  version: 4d6af280c76ff7d266434f2dba207c4b75dfc076
   subpackages:
   - doc
 - name: github.com/spf13/pflag
@@ -458,6 +458,7 @@ imports:
   - kubernetes/typed/storage/v1/fake
   - kubernetes/typed/storage/v1beta1
   - kubernetes/typed/storage/v1beta1/fake
+  - listers/core/v1
   - pkg/api
   - pkg/api/v1
   - pkg/api/v1/ref
@@ -514,6 +515,7 @@ imports:
   - util/flowcontrol
   - util/homedir
   - util/integer
+  - util/workqueue
 - name: k8s.io/kubernetes
   version: bc6162cc70b4a39a7f39391564e0dd0be60b39e9
   subpackages:

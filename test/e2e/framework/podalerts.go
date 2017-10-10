@@ -7,7 +7,7 @@ import (
 	"github.com/appscode/go/crypto/rand"
 	"github.com/appscode/go/log"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	sutil "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1/util"
+	slite_util "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1/util"
 	"github.com/appscode/searchlight/pkg/icinga"
 	"github.com/appscode/searchlight/test/e2e/matcher"
 	. "github.com/onsi/gomega"
@@ -61,7 +61,7 @@ func (f *Framework) UpdatePodAlert(meta metav1.ObjectMeta, transformer func(api.
 }
 
 func (f *Framework) TryPatchPodAlert(meta metav1.ObjectMeta, transform func(alert *api.PodAlert) *api.PodAlert) (*api.PodAlert, error) {
-	return sutil.TryPatchPodAlert(f.extClient, meta, transform)
+	return slite_util.TryPatchPodAlert(f.extClient, meta, transform)
 }
 
 func (f *Framework) DeletePodAlert(meta metav1.ObjectMeta) error {
@@ -114,7 +114,7 @@ func (f *Framework) EventuallyPodAlertIcingaService(meta metav1.ObjectMeta, podA
 	objectList, err := f.getPodAlertObjects(meta, podAlertSpec)
 	Expect(err).NotTo(HaveOccurred())
 
-	in := icinga.NewPodHost(nil, nil, f.icingaClient).
+	in := icinga.NewPodHost(f.icingaClient).
 		IcingaServiceSearchQuery(meta.Name, objectList...)
 
 	return Eventually(

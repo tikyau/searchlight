@@ -3,21 +3,14 @@ package icinga
 import (
 	"github.com/appscode/go/errors"
 	api "github.com/appscode/searchlight/apis/monitoring/v1alpha1"
-	cs "github.com/appscode/searchlight/client/typed/monitoring/v1alpha1"
-	"k8s.io/client-go/kubernetes"
 )
 
 type ClusterHost struct {
 	commonHost
-
-	KubeClient kubernetes.Interface
-	ExtClient  cs.MonitoringV1alpha1Interface
 }
 
-func NewClusterHost(kubeClient kubernetes.Interface, extClient cs.MonitoringV1alpha1Interface, IcingaClient *Client) *ClusterHost {
+func NewClusterHost(IcingaClient *Client) *ClusterHost {
 	return &ClusterHost{
-		KubeClient: kubeClient,
-		ExtClient:  extClient,
 		commonHost: commonHost{
 			IcingaClient: IcingaClient,
 		},
