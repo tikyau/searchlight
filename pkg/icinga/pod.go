@@ -21,11 +21,11 @@ func NewPodHost(IcingaClient *Client) *PodHost {
 	}
 }
 
-func (h *PodHost) getHost(alert api.PodAlert, pod apiv1.Pod) IcingaHost {
+func (h *PodHost) getHost(namespace string, pod apiv1.Pod) IcingaHost {
 	return IcingaHost{
 		ObjectName:     pod.Name,
 		Type:           TypePod,
-		AlertNamespace: alert.Namespace,
+		AlertNamespace: namespace,
 		IP:             pod.Status.PodIP,
 	}
 }
@@ -62,7 +62,7 @@ func (h *PodHost) expandVars(alertSpec api.PodAlertSpec, kh IcingaHost, attrs ma
 
 func (h *PodHost) Create(alert api.PodAlert, pod apiv1.Pod) error {
 	alertSpec := alert.Spec
-	kh := h.getHost(alert, pod)
+	kh := h.getHost(alert.Namespace, pod)
 
 	if has, err := h.CheckIcingaService(alert.Name, kh); err != nil || has {
 		return err
@@ -89,7 +89,7 @@ func (h *PodHost) Create(alert api.PodAlert, pod apiv1.Pod) error {
 
 func (h *PodHost) Update(alert api.PodAlert, pod apiv1.Pod) error {
 	alertSpec := alert.Spec
-	kh := h.getHost(alert, pod)
+	kh := h.getHost(alert.Namespace, pod)
 
 	attrs := make(map[string]interface{})
 	if alertSpec.CheckInterval.Seconds() > 0 {
@@ -105,10 +105,10 @@ func (h *PodHost) Update(alert api.PodAlert, pod apiv1.Pod) error {
 	return h.UpdateIcingaNotification(alert, kh)
 }
 
-func (h *PodHost) Delete(alert api.PodAlert, pod apiv1.Pod) error {
-	kh := h.getHost(alert, pod)
+func (h *PodHost) Delete(namespace, name string, pod apiv1.Pod) error {
+	kh := h.getHost(namespace, pod)
 
-	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+	if err := h.DeleteIcingaService(name, kh); err != nil {
 		return errors.FromErr(err).Err()
 	}
 	return h.DeleteIcingaHost(kh)

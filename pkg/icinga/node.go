@@ -23,7 +23,7 @@ func NewNodeHost(IcingaClient *Client) *NodeHost {
 	}
 }
 
-func (h *NodeHost) getHost(alert api.NodeAlert, node apiv1.Node) IcingaHost {
+func (h *NodeHost) getHost(namespace string, node apiv1.Node) IcingaHost {
 	nodeIP := "127.0.0.1"
 	for _, ip := range node.Status.Addresses {
 		if ip.Type == internalIP {
@@ -34,7 +34,7 @@ func (h *NodeHost) getHost(alert api.NodeAlert, node apiv1.Node) IcingaHost {
 	return IcingaHost{
 		ObjectName:     node.Name,
 		Type:           TypeNode,
-		AlertNamespace: alert.Namespace,
+		AlertNamespace: namespace,
 		IP:             nodeIP,
 	}
 }
@@ -114,10 +114,10 @@ func (h *NodeHost) Update(alert api.NodeAlert, node apiv1.Node) error {
 	return h.UpdateIcingaNotification(alert, kh)
 }
 
-func (h *NodeHost) Delete(alert api.NodeAlert, node apiv1.Node) error {
-	kh := h.getHost(alert, node)
+func (h *NodeHost) Delete(namespace, name string, node apiv1.Node) error {
+	kh := h.getHost(namespace, node)
 
-	if err := h.DeleteIcingaService(alert.Name, kh); err != nil {
+	if err := h.DeleteIcingaService(name, kh); err != nil {
 		return errors.FromErr(err).Err()
 	}
 	return h.DeleteIcingaHost(kh)

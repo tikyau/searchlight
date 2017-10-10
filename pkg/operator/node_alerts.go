@@ -41,15 +41,52 @@ func (op *Operator) initNodeAlertWatcher() {
 	// of the NodeAlert than the version which was responsible for triggering the update.
 	op.naIndexer, op.naInformer = cache.NewIndexerInformer(lw, &api.NodeAlert{}, op.Opt.ResyncPeriod, cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
-			key, err := cache.MetaNamespaceKeyFunc(obj)
-			if err == nil {
-				op.naQueue.Add(key)
+			if alert, ok := obj.(*api.NodeAlert); ok {
+				if ok, err := alert.IsValid(); !ok {
+					op.recorder.Eventf(
+						alert.ObjectReference(),
+						apiv1.EventTypeWarning,
+						eventer.EventReasonFailedToCreate,
+						`Reason: %v`,
+						alert.Name,
+						err,
+					)
+					return
+				} else {
+					key, err := cache.MetaNamespaceKeyFunc(obj)
+					if err == nil {
+						op.naQueue.Add(key)
+					}
+				}
 			}
 		},
 		UpdateFunc: func(old interface{}, new interface{}) {
-			key, err := cache.MetaNamespaceKeyFunc(new)
-			if err == nil {
-				op.naQueue.Add(key)
+			oldAlert, ok := old.(*api.NodeAlert)
+			if !ok {
+				log.Errorln("Invalid NodeAlert object")
+				return
+			}
+			newAlert, ok := new.(*api.NodeAlert)
+			if !ok {
+				log.Errorln("Invalid NodeAlert object")
+				return
+			}
+			if ok, err := newAlert.IsValid(); !ok {
+				op.recorder.Eventf(
+					newAlert.ObjectReference(),
+					apiv1.EventTypeWarning,
+					eventer.EventReasonFailedToDelete,
+					`Reason: %v`,
+					newAlert.Name,
+					err,
+				)
+				return
+			}
+			if !reflect.DeepEqual(oldAlert.Spec, newAlert.Spec) {
+				key, err := cache.MetaNamespaceKeyFunc(new)
+				if err == nil {
+					op.naQueue.Add(key)
+				}
 			}
 		},
 		DeleteFunc: func(obj interface{}) {
@@ -121,6 +158,12 @@ func (op *Operator) runNodeAlertInjector(key string) error {
 	if !exists {
 		// Below we will warm up our cache with a NodeAlert, so that we will see a delete for one d
 		fmt.Printf("NodeAlert %s does not exist anymore\n", key)
+
+		namespace, name, err := cache.SplitMetaNamespaceKey(key)
+		if err != nil {
+			return err
+		}
+		return op.clusterHost.Delete(namespace, name)
 	} else {
 		a := obj.(*api.NodeAlert)
 		fmt.Printf("Sync/Add/Update for NodeAlert %s\n", a.GetName())
