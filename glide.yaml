@@ -7,6 +7,7 @@ import:
 - package: github.com/appscode/go-notify
 - package: github.com/appscode/go
 - package: github.com/appscode/kutil
+  version: client-go-5
 - package: github.com/appscode/pat
 - package: github.com/cloudflare/cfssl
   version: b53da94cf51de120a50cbae533152fb3935375e0
@@ -38,14 +39,16 @@ import:
   version: v1.28.2
 - package: gopkg.in/macaron.v1
   version: v1.2.2
+- package: k8s.io/api
+  version: fe29995db37613b9c5b2a647544cf627bfa8d299
 - package: k8s.io/apiextensions-apiserver
-  version: 5fa44608f6b9b2180a2fd1ecb52e651fd0397794
+  version: a5bbfd114a9b122acd741c61d88c84812375d9e1
 - package: k8s.io/apimachinery
-  version: 1fd2e63a9a370677308a42f24fd40c86438afddf
+  version: 9d38e20d609d27e00d4ec18f7b9db67105a2bde0
 - package: k8s.io/client-go
-  version: v4.0.0
+  version: release-5.0
 - package: k8s.io/kubernetes
-  version: ~1.7.0
+  version: ~1.8
 testImport:
 - package: github.com/onsi/ginkgo
   version: v1.4.0
